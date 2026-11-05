@@ -39,10 +39,6 @@
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .glass-card {
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
       -webkit-appearance: none; 
@@ -69,7 +65,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- 匯率彈出鈕 -->
+        <!-- 匯率換算鈕 -->
         <button onclick="toggleCurrencyModal()" class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition">
           <i class="fa-solid fa-coins text-amber-500"></i>
           <span class="hidden sm:inline">匯率換算</span>
@@ -87,7 +83,7 @@
   <!-- 主容器 -->
   <main class="max-w-5xl mx-auto px-4 pt-5 space-y-5">
 
-    <!-- 即時當地天氣看板 (依切換天數自動鎖定吉隆坡/馬六甲) -->
+    <!-- 即時當地天氣看板 (依切換天數自動切換吉隆坡/馬六甲) -->
     <div id="weatherWidget" class="bg-gradient-to-r from-sky-500/10 via-teal-500/10 to-emerald-500/10 dark:from-sky-950/40 dark:via-teal-950/40 dark:to-emerald-950/40 border border-sky-200/80 dark:border-sky-800/80 rounded-3xl p-4 sm:p-5 transition-all duration-300">
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div class="flex items-center gap-3">
@@ -128,7 +124,7 @@
       </div>
     </div>
 
-    <!-- Hero 行程摘要卡片 -->
+    <!-- 行程摘要卡片 -->
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white p-5 sm:p-7 shadow-xl border border-slate-800">
       <div class="absolute -right-6 -bottom-8 opacity-10 pointer-events-none text-9xl">
         <i class="fa-solid fa-compass"></i>
@@ -140,7 +136,7 @@
           </div>
           <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">星宇航空 JX726 ✕ 美食打卡 ✕ 文化漫步</h2>
           <p class="text-slate-300 text-xs sm:text-sm max-w-xl leading-relaxed">
-            可隨時在出國旅途中點選「編輯時間」自由調動時段、上下調整先後順序或自訂增減行程，變更自動保存在手機中！
+            修改時間或新增行程後，系統將<strong>自動依照時間前後重新排序</strong>！所有變更均自動保存在手機中。
           </p>
         </div>
 
@@ -163,21 +159,28 @@
       </div>
     </div>
 
-    <!-- 搜尋欄與控制面板 -->
+    <!-- 搜尋欄與操作按鈕 -->
     <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
       <!-- 快速關鍵字搜尋 -->
       <div class="relative flex-1">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="搜尋景點、必吃美食（例：王美記、叻沙、清真寺）..." class="w-full pl-9 pr-8 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition">
+        <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="搜尋景點、必吃美食（例：王美記、叻沙、清真寺）..." class="w-full pl-9 pr-8 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition">
         <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <!-- 新增自訂行程按鈕 -->
-      <button onclick="openAddEventModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
-        <i class="fa-solid fa-plus text-xs"></i> 新增當日行程
-      </button>
+      <div class="flex items-center gap-2">
+        <!-- 一鍵依時間重新排序 -->
+        <button onclick="sortCurrentDayItemsByTime(true)" class="px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-950/50 hover:text-teal-600 dark:hover:text-teal-400 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition active:scale-95" title="強制依時間由早到晚重新排序當天行程">
+          <i class="fa-solid fa-arrow-down-short-wide text-teal-600"></i> 依時間排序
+        </button>
+
+        <!-- 新增自訂行程按鈕 -->
+        <button onclick="openAddEventModal()" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95 flex-shrink-0">
+          <i class="fa-solid fa-plus text-xs"></i> 新增行程
+        </button>
+      </div>
     </div>
 
     <!-- 天數切換按鈕 (Tabs) -->
@@ -199,8 +202,8 @@
         <button onclick="setCategoryFilter('hotel')" class="filter-btn px-3 py-1.5 rounded-full font-medium transition" data-cat="hotel"><i class="fa-solid fa-hotel text-emerald-500 mr-1"></i>住宿</button>
       </div>
 
-      <div class="text-[11px] text-slate-400 hidden sm:block">
-        可點擊卡片右上角 <i class="fa-regular fa-clock mx-0.5"></i> 修改時間
+      <div class="text-[11px] text-teal-600 dark:text-teal-400 font-medium hidden sm:flex items-center gap-1">
+        <i class="fa-solid fa-bolt"></i> 改時間會自動排好先後順序
       </div>
     </div>
 
@@ -261,7 +264,7 @@
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
         <h3 class="font-bold text-base flex items-center gap-2">
-          <i class="fa-regular fa-clock text-teal-600"></i> 修改時間
+          <i class="fa-regular fa-clock text-teal-600"></i> 修改行程時間
         </h3>
         <button onclick="closeEditTimeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -270,13 +273,16 @@
 
       <div>
         <p class="text-xs text-slate-400 mb-1" id="modalItemTitle">行程名稱</p>
-        <label class="text-xs text-slate-500 font-semibold mb-1 block">設定自訂時間或時段：</label>
-        <input type="text" id="modalTimeInput" placeholder="例如：12:30–13:45 或 依現場狀況" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <label class="text-xs text-slate-500 font-semibold mb-1 block">設定時間或時段（儲存後自動排序）：</label>
+        <input type="text" id="modalTimeInput" placeholder="例如：12:30–13:45 或 16:30" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <p class="text-[11px] text-teal-600 dark:text-teal-400 mt-1.5">
+          <i class="fa-solid fa-sparkles mr-1"></i>系統會辨識開頭時間並自動將該行程移到正確時間點。
+        </p>
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeEditTimeModal()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">取消</button>
-        <button onclick="saveEditedTime()" class="px-4 py-1.5 text-xs rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold">確認保存</button>
+        <button onclick="saveEditedTime()" class="px-4 py-1.5 text-xs rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold">保存並自動排序</button>
       </div>
     </div>
   </div>
@@ -301,8 +307,8 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-semibold text-slate-600 dark:text-slate-300 mb-1 block">時間或時段 *</label>
-            <input type="text" id="newTime" placeholder="例如：15:00–16:00" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <label class="font-semibold text-slate-600 dark:text-slate-300 mb-1 block">時間或時段 * (自動排序)</label>
+            <input type="text" id="newTime" placeholder="例如：10:30–11:30" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500">
           </div>
           <div>
             <label class="font-semibold text-slate-600 dark:text-slate-300 mb-1 block">分類 *</label>
@@ -318,23 +324,23 @@
 
         <div>
           <label class="font-semibold text-slate-600 dark:text-slate-300 mb-1 block">標籤 (可選)</label>
-          <input type="text" id="newTag" placeholder="例如：必吃甜點、臨時加碼" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <input type="text" id="newTag" placeholder="例如：加碼美食、下午茶" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500">
         </div>
 
         <div>
           <label class="font-semibold text-slate-600 dark:text-slate-300 mb-1 block">行程備註 / 注意事項</label>
-          <textarea id="newNote" rows="2" placeholder="交通方式、旅伴特殊需求或寄放行李提醒..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+          <textarea id="newNote" rows="2" placeholder="交通方式、旅伴需求或寄放行李提醒..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
         </div>
 
         <div>
           <label class="font-semibold text-slate-600 dark:text-slate-300 mb-1 block">✨ 特色亮點 / 必吃必看重點</label>
-          <textarea id="newHighlight" rows="2" placeholder="特色招牌菜、拍照角度、必買伴手禮..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+          <textarea id="newHighlight" rows="2" placeholder="特色招牌菜、拍照角度、必買推薦..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
         <button onclick="closeAddEventModal()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">取消</button>
-        <button onclick="saveNewEvent()" class="px-4 py-1.5 text-xs rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold">加入本日行程</button>
+        <button onclick="saveNewEvent()" class="px-4 py-1.5 text-xs rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold">加入並自動排序</button>
       </div>
     </div>
   </div>
@@ -357,7 +363,7 @@
 
   <script>
     /* ========================================================
-       原始行程資料庫（包含細緻亮點特色）
+       行程資料庫完整定義（五天完整行程）
        ======================================================== */
     const DEFAULT_DATA = [
       {
@@ -857,14 +863,64 @@
     let editingItemId = null;
 
     /* ========================================================
-       即時當地天氣管理 (Open-Meteo API: 免 Key / 免註冊)
+       時間解析與自動排序核心演算法 (Time Parsing & Sorting)
+       ======================================================== */
+    // 將 "08:00–09:00", "約 13:00~14:00", "16:25", "依第二位航班時間" 解析為當天分鐘數 (0~1440)
+    function parseTimeToMinutes(timeStr) {
+      if (!timeStr || typeof timeStr !== 'string') return 9999;
+      
+      // 特殊文字預設時間權重
+      if (timeStr.includes("依第二位航班") || timeStr.includes("第二位")) {
+        return 10 * 60; // 約 10:00 排在退房前後
+      }
+
+      // 使用正則提取前段的第一組時間 (HH:MM 或 H:MM 或 HH)
+      const match = timeStr.match(/(\d{1,2})[:：](\d{2})/);
+      if (match) {
+        const hours = parseInt(match[1], 10);
+        const minutes = parseInt(match[2], 10);
+        return hours * 60 + minutes;
+      }
+
+      // 若只有單個小時數字如 "12:00" 被寫成 "12點"
+      const hourOnlyMatch = timeStr.match(/(\d{1,2})\s*(點|時)/);
+      if (hourOnlyMatch) {
+        return parseInt(hourOnlyMatch[1], 10) * 60;
+      }
+
+      return 9999; // 無法識別的時間預設排至當天最末端
+    }
+
+    // 對某天的行程清單依時間由早到晚進行排序
+    function sortItemsByTimeArray(items) {
+      return items.sort((a, b) => {
+        const timeA = parseTimeToMinutes(a.time);
+        const timeB = parseTimeToMinutes(b.time);
+        return timeA - timeB;
+      });
+    }
+
+    // 觸發當前天數的自動排序
+    function sortCurrentDayItemsByTime(showNotification = false) {
+      const dayData = itineraryData.find(d => d.day === currentDay);
+      if (dayData && dayData.items) {
+        sortItemsByTimeArray(dayData.items);
+        persistData();
+        renderTimeline();
+        if (showNotification) {
+          showToast(`Day ${currentDay} 行程已自動依時間先後排序！`);
+        }
+      }
+    }
+
+    /* ========================================================
+       即時當地天氣管理 (Open-Meteo API: 免 Key)
        ======================================================== */
     const CITY_COORDS = {
       KL: { name: '吉隆坡 Kuala Lumpur', lat: 3.1390, lon: 101.6869 },
       Melaka: { name: '馬六甲 Melaka', lat: 2.1896, lon: 102.2501 }
     };
 
-    // WMO 天氣代碼解讀表
     function decodeWmoWeather(code) {
       if (code === 0) return { text: "晴朗無雲", icon: "fa-sun text-amber-500" };
       if (code === 1 || code === 2) return { text: "晴時多雲", icon: "fa-cloud-sun text-amber-400" };
@@ -896,7 +952,6 @@
         const code = current.weather_code;
         const weatherInfo = decodeWmoWeather(code);
 
-        // 取得當前小時降雨機率預估
         let precipProb = 20;
         if (data.hourly && data.hourly.precipitation_probability) {
           const nowHour = new Date().getHours();
@@ -916,7 +971,7 @@
         console.warn('天氣讀取錯誤，使用離線估算值', err);
         document.getElementById('weatherTemp').innerText = "31";
         document.getElementById('weatherApparentTemp').innerText = "35°C";
-        document.getElementById('weatherCondition').innerText = "熱帶多雲 · 留意午後陣雨";
+        document.getElementById('weatherCondition').innerText = "熱帶多雲 · 留意午後短暫陣雨";
         document.getElementById('weatherPrecipitation').innerText = "降雨機率約 40%";
         document.getElementById('weatherIconBox').innerHTML = `<i class="fa-solid fa-cloud-sun text-amber-500"></i>`;
       } finally {
@@ -925,7 +980,7 @@
     }
 
     function syncWeatherForDay(dayNumber, isManual = false) {
-      // Day 3 為馬六甲行程，其餘天數在吉隆坡
+      // Day 3 為馬六甲行程，其餘在吉隆坡
       const targetCity = (dayNumber === 3) ? 'Melaka' : 'KL';
       fetchCityWeather(targetCity, isManual);
     }
@@ -934,7 +989,6 @@
       syncWeatherForDay(currentDay, isManual);
     }
 
-    // 分類樣式對照表
     const categoryStyles = {
       food: {
         badge: "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-200 dark:border-amber-800",
@@ -963,7 +1017,6 @@
       }
     };
 
-    // 初始化 LocalStorage 資料
     function loadData() {
       try {
         const savedData = localStorage.getItem('kl_itinerary_data_v2');
@@ -978,7 +1031,7 @@
           checkedItems = new Set(JSON.parse(savedChecks));
         }
       } catch (e) {
-        console.warn('載入 LocalStorage 失敗，套用預設資料', e);
+        console.warn('載入失敗，套用預設資料', e);
         itineraryData = JSON.parse(JSON.stringify(DEFAULT_DATA));
       }
     }
@@ -994,7 +1047,7 @@
     }
 
     /* ========================================================
-       渲染器：Tabs & 提醒卡片
+       渲染器
        ======================================================== */
     function renderTabs() {
       const container = document.getElementById('dayTabsContainer');
@@ -1037,9 +1090,6 @@
       `;
     }
 
-    /* ========================================================
-       渲染器：行程時間軸清單（含亮點與時間修改按鈕）
-       ======================================================== */
     function renderTimeline() {
       const dayData = itineraryData.find(d => d.day === currentDay);
       const container = document.getElementById('timelineContainer');
@@ -1048,12 +1098,10 @@
 
       let items = [...dayData.items];
 
-      // 分類過濾
       if (currentCategory !== 'all') {
         items = items.filter(i => i.category === currentCategory);
       }
 
-      // 搜尋過濾
       if (searchQuery.trim() !== '') {
         const q = searchQuery.toLowerCase();
         items = items.filter(i => 
@@ -1098,7 +1146,7 @@
               <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800/80 flex-wrap">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <!-- 可點擊修改時間按鈕 -->
-                  <button onclick="openEditTimeModal('${item.id}', '${encodeURIComponent(item.title)}', '${encodeURIComponent(item.time)}')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-950/60 hover:text-teal-600 text-slate-700 dark:text-slate-300 font-mono text-xs font-semibold flex items-center gap-1.5 transition border border-transparent hover:border-teal-200 dark:hover:border-teal-800" title="點擊修改時間">
+                  <button onclick="openEditTimeModal('${item.id}', '${encodeURIComponent(item.title)}', '${encodeURIComponent(item.time)}')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-950/60 hover:text-teal-600 text-slate-700 dark:text-slate-300 font-mono text-xs font-semibold flex items-center gap-1.5 transition border border-transparent hover:border-teal-200 dark:hover:border-teal-800" title="點擊修改時間（自動排序）">
                     <i class="fa-regular fa-clock text-teal-600 dark:text-teal-400"></i>
                     <span>${item.time}</span>
                     <i class="fa-solid fa-pen text-[10px] opacity-60"></i>
@@ -1112,14 +1160,14 @@
                   ${isCustom ? `<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-semibold">自訂</span>` : ''}
                 </div>
 
-                <!-- 動作按鈕：順序調整、導航、刪除 (若為自訂) -->
+                <!-- 動作按鈕：順序微調、導航、刪除 -->
                 <div class="flex items-center gap-1">
-                  <!-- 上移 -->
-                  <button onclick="moveItem('${item.id}', -1)" ${index === 0 ? 'disabled' : ''} class="w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition" title="往前移動順序">
+                  <!-- 上移微調 -->
+                  <button onclick="moveItem('${item.id}', -1)" ${index === 0 ? 'disabled' : ''} class="w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition" title="微調上移順序">
                     <i class="fa-solid fa-chevron-up text-[10px]"></i>
                   </button>
-                  <!-- 下移 -->
-                  <button onclick="moveItem('${item.id}', 1)" ${index === items.length - 1 ? 'disabled' : ''} class="w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition" title="往後移動順序">
+                  <!-- 下移微調 -->
+                  <button onclick="moveItem('${item.id}', 1)" ${index === items.length - 1 ? 'disabled' : ''} class="w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition" title="微調下移順序">
                     <i class="fa-solid fa-chevron-down text-[10px]"></i>
                   </button>
                   <!-- 導航 -->
@@ -1163,9 +1211,6 @@
       }).join('');
     }
 
-    /* ========================================================
-       進度更新
-       ======================================================== */
     function updateProgress() {
       let total = 0;
       itineraryData.forEach(day => {
@@ -1181,14 +1226,13 @@
     }
 
     /* ========================================================
-       互動邏輯：切換、打卡、搜尋
+       互動邏輯
        ======================================================== */
     function switchDay(day) {
       currentDay = day;
       renderTabs();
       renderTipBox();
       renderTimeline();
-      // 切換天數時自動同步該城市天氣
       syncWeatherForDay(day, false);
     }
 
@@ -1233,7 +1277,7 @@
     }
 
     /* ========================================================
-       動態編輯時間功能 (In-Trip Adjustability)
+       修改時間與自動重新排序 (Auto-sort on Edit)
        ======================================================== */
     function openEditTimeModal(id, encodedTitle, encodedTime) {
       editingItemId = id;
@@ -1257,17 +1301,16 @@
         const item = dayData.items.find(i => i.id === editingItemId);
         if (item) {
           item.time = newTime;
+          // 關鍵功能：自動依時間順序重新排列整天行程！
+          sortItemsByTimeArray(dayData.items);
           persistData();
           renderTimeline();
-          showToast('時間已更新！');
+          showToast(`時間已更新，並已自動排序！`);
         }
       }
       closeEditTimeModal();
     }
 
-    /* ========================================================
-       行程排序移動
-       ======================================================== */
     function moveItem(id, direction) {
       const dayData = itineraryData.find(d => d.day === currentDay);
       if (!dayData) return;
@@ -1282,12 +1325,12 @@
         dayData.items[newIdx] = temp;
         persistData();
         renderTimeline();
-        showToast('順序已更新！');
+        showToast('順序已微調！');
       }
     }
 
     /* ========================================================
-       自訂新增行程
+       自訂新增行程並自動插入排序
        ======================================================== */
     function openAddEventModal() {
       document.getElementById('newTitle').value = '';
@@ -1328,10 +1371,12 @@
           isCustom: true
         };
         dayData.items.push(newObj);
+        // 新增後自動依照時間先後排序插入正確時段
+        sortItemsByTimeArray(dayData.items);
         persistData();
         renderTimeline();
         closeAddEventModal();
-        showToast('已成功新增行程項目！');
+        showToast('已新增行程並自動插入正確時段！');
       }
     }
 
@@ -1348,9 +1393,6 @@
       }
     }
 
-    /* ========================================================
-       還原預設
-       ======================================================== */
     function resetDayToDefault() {
       if (confirm('確定要將所有行程還原至初始規劃嗎？(所有自訂時間與新增項目將會被重設)')) {
         itineraryData = JSON.parse(JSON.stringify(DEFAULT_DATA));
@@ -1362,7 +1404,7 @@
     }
 
     /* ========================================================
-       輔助小工具：導航、分享、提示
+       小工具：導航、分享、通知、匯率
        ======================================================== */
     function searchMap(keyword) {
       window.open(`https://www.google.com/maps/search/?api=1&query=${keyword}+Malaysia`, '_blank');
@@ -1406,9 +1448,6 @@
       }, 2000);
     }
 
-    /* ========================================================
-       匯率計算小工具
-       ======================================================== */
     const EXCHANGE_RATE = 7.15; // 1 MYR ≈ 7.15 TWD
 
     function toggleCurrencyModal() {
@@ -1428,9 +1467,6 @@
       }
     }
 
-    /* ========================================================
-       深色模式切換
-       ======================================================== */
     const themeBtn = document.getElementById('themeToggle');
     function initTheme() {
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -1449,9 +1485,6 @@
       }
     });
 
-    /* ========================================================
-       初始化啟動
-       ======================================================== */
     window.onload = function() {
       initTheme();
       loadData();
@@ -1459,7 +1492,6 @@
       renderTipBox();
       setCategoryFilter('all');
       updateProgress();
-      // 初始化加載第一天天氣（吉隆坡）
       syncWeatherForDay(currentDay, false);
     };
   </script>
